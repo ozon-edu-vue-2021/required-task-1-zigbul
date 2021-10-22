@@ -1,9 +1,13 @@
 'use strict';
 
 const action = document.querySelector('.action');
-const templateImageCard = document.querySelector('#image');
+// const templateImageCard = document.querySelector('#image');
 const templateImagePopup = document.querySelector('#popup-image');
 const container = document.querySelector('.images');
+
+// if ('content' in document.createElement('template')) {
+//     console.log(templateImageCard)
+// }
 
 const popup = document.querySelector('.popup');
 const popupContainer = document.querySelector('.popup .content');
@@ -32,7 +36,8 @@ const getPictures = function (page = 1, limit = 10) {
     showLoader();
     fetch(`https://picsum.photos/v2/list?page=${page};limit=${limit}`)
         .then(function (response) {return response.json()})
-        .then(function (result) {renderPictures(result)})
+        .then(function (result) {renderPictures(result)
+        })
 }
 
 /**
@@ -62,7 +67,7 @@ const showLoader = function () {
 const hideLoader = function () {
     loaderTimeout = setTimeout(function () {
         loader.style.visibility = 'hidden';
-        loaderTimeout.clearTimeout();
+        clearTimeout(loaderTimeout);
     }, 700);
 }
 
@@ -86,25 +91,28 @@ const cropImage = function (src, size = 2) {
  * заполняет его и встраивает в разметку
  * @param {array} list
  */
-const renderPictures = function (list) {
+ function renderPictures(list) {
+
     if (!list.length) {
         throw Error(`Pictures not defined. The list length: ${list.length}`);
     }
 
+    const templateImageCard = document.querySelector('#image');
     const clone = templateImageCard.content.cloneNode(true);
     const fragment = document.createDocumentFragment();
 
     list.forEach(function (element) {
-        const link = clone.querySelector('a');
-
+        const link = document.createElement('a');
         link.href = element.url;
         link.dataset.id = element.id;
-
-        const image = clone.querySelector('img');
+        
+        const image = document.createElement('img');
         image.src = cropImage(element.download_url, 5);
         image.alt = element.author;
         image.classList.add('preview');
-        fragment.appendChild(clone)
+
+        link.appendChild(image);
+        fragment.appendChild(link);
     });
 
     container.appendChild(fragment);
@@ -170,10 +178,7 @@ const actionHandler = function (evt) {
  */
 const imageHandler = function (evt) {
     evt.preventDefault();
-
-    if (evt.target.closest('a')) {
-        getPictureInfo(evt.target.dataset.id);
-    }
+    getPictureInfo(evt.target.closest('a').dataset.id);
 }
 
 action.addEventListener('click', actionHandler);
