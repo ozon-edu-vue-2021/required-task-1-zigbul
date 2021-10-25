@@ -1,13 +1,8 @@
 'use strict';
 
 const action = document.querySelector('.action');
-// const templateImageCard = document.querySelector('#image');
 const templateImagePopup = document.querySelector('#popup-image');
 const container = document.querySelector('.images');
-
-// if ('content' in document.createElement('template')) {
-//     console.log(templateImageCard)
-// }
 
 const popup = document.querySelector('.popup');
 const popupContainer = document.querySelector('.popup .content');
@@ -36,8 +31,8 @@ const getPictures = function (page = 1, limit = 10) {
     showLoader();
     fetch(`https://picsum.photos/v2/list?page=${page};limit=${limit}`)
         .then(function (response) {return response.json()})
-        .then(function (result) {renderPictures(result)
-        })
+        .then(function (result) {renderPictures(result)})
+        .catch((e) => console.log(e));
 }
 
 /**
@@ -50,6 +45,7 @@ const getPictureInfo = function (id = 0) {
     fetch(`https://picsum.photos/id/${id}/info`)
         .then(function (response) {return response.json()})
         .then(function (result) {renderPopupPicture(result)})
+        .catch(e => console.log(e));
 }
 
 /**
@@ -160,7 +156,7 @@ const togglePopup = function () {
 const actionHandler = function (evt) {
     evt.preventDefault();
     const nextPage = evt.currentTarget.dataset.page;
-    evt.currentTarget.dataset.page = nextPage + 1;
+    evt.currentTarget.dataset.page = +nextPage + 1;
 
     if (nextPage > MAX_PAGE_IAMGES) {
         console.warn(`WARN: You are trying to call a page that exceeds ${MAX_PAGE_IAMGES}`);
